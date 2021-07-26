@@ -3,7 +3,7 @@
 
 Source code oficial da kinny bot
 
-[![Discord](https://logodownload.org/wp-content/uploads/2017/11/discord-logo-4-1.png)](https://discord.gg/wzyXFBvFJr)
+[![Discord](<img src="https://s18955.pcdn.co/wp-content/uploads/2018/02/github.png" width="25"/>])(https://discord.gg/wzyXFBvFJr)
 
 O dono da handler utlizada na kinny foi: https://github.com/5antos/
 Foi utlizada a versão do node.js v14.16.0
