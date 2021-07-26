@@ -1,4 +1,4 @@
-![Discord](https://discord.gg/wzyXFBvFJr)
+
 
 # KINNY BOT 
 Source code oficial da kinny bot
@@ -9,4 +9,7 @@ Sistema de musica: Lavalink, wrapper Erela.js
 Banco de dados: Mongo DB, wrapper mongoose
 ## Creditos
 Criador - LMS5413
-# DISCORD
+
+# DISCORD SUPORTE
+
+https://discord.gg/wzyXFBvFJr
