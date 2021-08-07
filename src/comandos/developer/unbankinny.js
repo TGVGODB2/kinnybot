@@ -6,7 +6,7 @@ module.exports = {
     },
     run: async(client, message, args) => {
         let gp = message.mentions.members.first(1)[0]
-        if(message.author.id !== '395995293436477442') {
+        if(!message.author ? message.user.id:message.author.id !== '425775842371829760') {
             message.reply('Apenas meu desenvolvedor pode executar esse comando!')
         } else {
             let procm =  await db.ban.findOne({punid: gp})
@@ -14,9 +14,9 @@ module.exports = {
                 await db.ban.remove({
                     punid: gp.id,
                 })
-                message.channel.send('Pronto! Essa pessoa foi desbanida!')
+                message.reply('Pronto! Essa pessoa foi desbanida!')
             } else {
-                message.channel.send('Essa pessoa não está banida')
+                message.reply('Essa pessoa não está banida')
             }
         }
     }

@@ -1,15 +1,16 @@
 const { Message } = require('discord.js')
+require('colors')
 const mongoose = require ('mongoose')
 const Schema = mongoose.Schema
-mongoose.connect('mongodb+srv://user:password@Cluster0.b9jeb.mongodb.net/Cluster0\n\n?retryWrites=true&w=majority', {
+mongoose.connect('', {
     useUnifiedTopology: true,
     useNewUrlParser: true,
     useFindAndModify: false
 
 }).catch(error => {
-    console.log('Nao foi possivel conectar na mongoose, fechando conexão! Erro: ' + error)
+    console.log(`[DB] Nao foi possivel conectar na mongoose, fechando conexão! Erro: ${error.message}`.red)
 })
-console.log('Database conectada!')
+console.log('[DB] Database conectada!'.green)
 
 let prefix = new Schema({
     prefix: { type: String},
@@ -22,10 +23,6 @@ let mutes = new Schema({
     memberid: { type: String},
     guildId: { type: String},
 })
-let inferno = new Schema({
-    owner: { type: String },
-    vag: { type: String }
-})
 let xp = new Schema({
     xp: { type: Number },
     userID: { type: String },
@@ -36,17 +33,16 @@ let canais = new Schema({
     group: { type: String },
     groupwelcome: { type: String },
     channel: { type: String },
-    channelwelcome: { type: String },
+    channelwele: { type: String },
+    channelwell: { type: String },
+    enabled: { type: Boolean },
     msg1: { type: String },
     msg2: { type: String },
     role: { type: String },
     grouplog: {type: String},
     channellogs: {type: String},
-    logs: {type: Array}
-})
-let xpch = new Schema({
-    grupo: { type: String },
-    chanl: { type: String },
+    logs: {type: Array},
+    xpc: { type: String }
 })
 let reCaptch = new Schema({
     groupid: { type: String },
@@ -63,6 +59,10 @@ let premium = new Schema({
     groupid: { type: String },
     memberid: { type: String},
 })
+let porn = new Schema({
+    groupid: { type: String },
+    channel: { type: String},
+})
 let koins = new Schema({
     id: { type: String },
     coinsc: { type: Number },
@@ -78,7 +78,8 @@ let koins = new Schema({
 })
 let loja = new Schema({
     consumidor: { type: String },
-    produtos: { type: Array }
+    produtos: { type: Array },
+    cooldown: {type: Number}
 })
 let rep = new Schema({
     id: { type: String },
@@ -92,7 +93,6 @@ let repcooldown = new Schema({
 })
 let sorteio = new Schema({
     guildID: {type: String},
-    part: {type: Array},
     end: {type: Boolean},
     channel: {type: String},
     title: {type: String},
@@ -115,8 +115,28 @@ let webhook = new Schema({
     channelid: {type: String},
     guildid: {type: String},
 })
-let va = new mongoose.model('infer', inferno)
-exports.infer = va
+let creating = new Schema({
+    id: {type: String},
+    converting: {type: Boolean},
+})
+let res = new Schema({
+    pergunta: {type: String},
+    perguntatolower: {type: String},
+    respostas: {type: Array},
+    especialistas: {type: Boolean},
+    categoria: {type: String},
+    autor: {type: String}
+})
+let emp = new Schema({
+    name: {type: String},
+    nametolower: {type: String},
+    jornalistas: {type: Array, default: []},
+    dono: {type: String},
+    materias: {type: Array},
+    espectadores: {type: Number, default: 0},
+    espectadorestotal: {type: Number, default: 0},
+    lang: {type: String},
+})
 let muts = new mongoose.model('muteds', mutes)
 exports.muteds = muts
 let xpa = new mongoose.model('xps', xp)
@@ -125,8 +145,6 @@ let koin = new mongoose.model('coins', koins)
 exports.coins = koin
 let cahc = new mongoose.model('idgr', canais)
 exports.idgr = cahc
-let xpch2  = new mongoose.model('chan', xpch)
-exports.chan = xpch2
 let pram  = new mongoose.model('premi', premium)
 exports.premi = pram
 let cap  = new mongoose.model('cap', reCaptch)
@@ -147,3 +165,11 @@ let set = new mongoose.model('sets', setcommand)
 exports.sets = set
 let web = new mongoose.model('webs', webhook)
 exports.webs = web
+let con = new mongoose.model('con', creating)
+exports.con = con
+let ar = new mongoose.model('res', res)
+exports.res = ar
+let empa = new mongoose.model('empr', emp)
+exports.empr = empa
+let por = new mongoose.model('can',porn)
+exports.can = por

@@ -2,16 +2,22 @@ const { MessageEmbed } = require('discord.js')
 module.exports = {
     config: {
         nome: 'mineskin',
-        cooldown: 10
+        cooldown: 10,
+        options: [{
+            name: 'nick',
+            type: 'STRING',
+            description: 'Nick do jogador!',
+            required: true,
+        }],
     },
     run: async(client, message, args) => {
-        let ip = args.join(' ')
+        let ip = args.join(' ') || message.options.getString('nick')
         if (!ip) return message.reply('Digite o seu nick!!')
         const embed = new MessageEmbed()
             .setColor('#9900f8')
             .addField(`${client.user.username} - Minecraft`, `Skin de ${ip}! [Clique aqui para baixar a skin!](https://mc-heads.net/skin/${ip})`)
             .setImage(`https://mc-heads.net/player/${ip}`)
 
-        message.channel.send(embed)
+        message.reply({embeds: [embed]})
     }
 }

@@ -13,7 +13,7 @@ module.exports = async(client, oldState, newState) => {
     player.destroy()
  }
 }
-   let log = await db.idgr.findOne({grouplog: oldState.guild.id})
+   let log = await db.idgr.findOne({group: oldState.guild.id})
    if(!log) return;
    if(log.logs.includes('voice')) { 
    let canal = client.channels.cache.get(log.channellogs) 
@@ -23,13 +23,14 @@ module.exports = async(client, oldState, newState) => {
       .setColor('#9900f8')
       .setTitle(`${client.user.username} - Logs`)
       .setDescription(`**Uma pessoa entrou em 1 canal de voz!**\nNome: ${client.users.cache.get(newState.id).username}\n \nCanal: ${newState.channel.name}`)
-  canal.send(embed)
+  canal.send({embeds: [embed]})
    } else {
+       if(oldState.member.voice.selfMute || newState.member.voice.selfMute || !oldState.member.selfMute || !newState.member.selfMute) return;
       const embed = new MessageEmbed()
       .setColor('#9900f8')
       .setTitle(`${client.user.username} - Logs`)
       .setDescription(`**Uma pessoa saiu em 1 canal de voz!**\nNome: ${client.users.cache.get(oldState.id).username}\n \nCanal: ${oldState.channel.name}`)
-  canal.send(embed)
+  canal.send({embeds: [embed]})
    }
 } else return;  
 }

@@ -4,14 +4,8 @@ const Canvas = require('canvas')
 const { registerFont } = require('canvas')
 const Discord = require('discord.js')
 module.exports = async(client, member) => {
-    let achar = await db.idgr.findOne({group: member.guild.id})
-    if(achar) {
-        let guild = client.guilds.cache.get(achar.group)
-        let canal = guild.channels.cache.get(achar.channel)
-
-        canal.edit({name: `${guild.memberCount}`})
-    }
-    let achar2 = await db.idgr.findOne({groupwelcome: member.guild.id})
+    console.log(member.guild)
+    let achar2 = await db.idgr.findOne({group: member.guild.id})
     let achar4 = await db.cap.findOne({groupid: member.guild.id})
     if(achar4) {
         if (achar4.capactivy === "ativado") {
@@ -54,7 +48,7 @@ module.exports = async(client, member) => {
                 .attachFiles(attachment)
                 .addField(`${client.user.username} - Segurança`,`🇧🇷 Olá! Você foi barrado captcha, você so precisa digitar esse codigo que aparece imagem abaixo! \n \n 🇺🇸 Hi! You were barred captcha, you need to type this code that appears in the image below!`)
                 .setImage('attachment://reacp.png')
-            member.send(embed)
+            member.send({embeds: [embed]})
             main.on('collect', async a => {
                 let n1 = a.content.toLowerCase()
                 if(`${n1}` === `${achar4.code}`) {
@@ -79,31 +73,33 @@ module.exports = async(client, member) => {
         }
     }
     if(achar2) {
-        let guild = client.guilds.cache.get(achar2.groupwelcome)
-        let canala = client.channels.cache.get(achar2.channelwelcome)
+        if(achar2.enabled) {
+        let guild = client.guilds.cache.get(achar2.group)
+        let canala = client.channels.cache.get(achar2.channelwele)
         const canvas = Canvas.createCanvas(1280, 720);
         const ctx = canvas.getContext('2d');
 
         const background = await Canvas.loadImage(String(path.resolve(__dirname, '..', '..', 'Canvas','bemvindo.png')));
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        ctx.strokeStyle = '#ffffff';
+        ctx.strokeStyle = '#FFFFFF';
         ctx.strokeRect(0, 0, canvas.width, canvas.height);
-        ctx.arc(646, 322, 170, 0, Math.PI * 2, true);
+        ctx.arc(640, 348, 170, 0, Math.PI * 2, true);
         ctx.lineWidth = 15;
         ctx.stroke();
         ctx.closePath();
         ctx.clip()
         const avatar = await Canvas.loadImage(member.user.displayAvatarURL({ format: 'png' }));
-        ctx.drawImage(avatar, 430, 120, 420, 420);
+        ctx.drawImage(avatar, 460, 174, 350, 350);
         const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'bemvindo.png');
         if(achar2.msg1) {
-            canala.send(`${achar2.msg1.replace('{user}', `${member}`).replace('{grupo}', `${guild.name}`)}`, attachment);
+            canala.send(`_O servidor ${member.guild.name} que definiu essa mensagem. Caso tenha palavras ofensivas reporte!_ \n \n${achar2.msg1.replace('{user}', `${member}`).replace('{grupo}', `${guild.name}`)}`, attachment);
         } else {
             canala.send(`Bem vindo ao **${guild.name}** ${member}! Venha se divertir aqui!`, attachment);
         }
         if(achar2.role) {
             member.roles.add(achar2.role)
+        }
         }
     }
 }

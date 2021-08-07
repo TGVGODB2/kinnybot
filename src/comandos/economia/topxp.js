@@ -6,7 +6,7 @@ module.exports = {
         cooldown: 10
     },
     run: async(client, message) => {
-        const lan = await db.lgs.findOne({guildID: message.guild.id})
+        const lan = await db.lgs.findOne({guildID: !message.author ? message.user.id:message.author.id})
             let users = await db.xps.find()
             users = users.sort((a, b) => b.xp - a.xp)
             if(!lan) {
@@ -15,7 +15,7 @@ module.exports = {
             .setColor('#9900f8')
             .setTitle(`${client.user.username} - Estatisticas`)
             .addField('Tops XP', `${top.slice(0, 10).join('\n')}`)
-        message.channel.send(embed)
+        message.reply({embeds: [embed]})
             } else {
                 if(lan.lang === 'en') {
                     let top = users.map((value, index) => `🎉 ${index + 1}° \`${client.users.cache.get(`${value.userID}`)?.username || "Without Nick"}\` have an amount of ${value.xp} XP`)
@@ -23,6 +23,8 @@ module.exports = {
                         .setColor('#9900f8')
                         .setTitle(`${client.user.username} - Statics`)
                         .addField('XP tops', `${top.slice(0, 10).join('\n')}`)
+
+                        message.reply({embeds: [embed]})
                 }
             }
     }

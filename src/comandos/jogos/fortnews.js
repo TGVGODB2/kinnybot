@@ -15,7 +15,7 @@ module.exports = {
                 .setTitle(`${client.user.username} - Fortnite`)
                 .setImage(estatis.image)
 
-            message.channel.send(embed)
+            message.reply({embeds: [embed]})
 
 
         })

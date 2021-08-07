@@ -3,13 +3,19 @@ const { MessageEmbed }=  require('discord.js')
 const db = require('../../../db')
 module.exports = {
     config: {
-        nome: 'npm'
+        nome: 'npm',
+        options: [{
+            name: 'npm',
+            type: 'STRING',
+            description: 'Nome da package que deseja pesquisar via NPM',
+            required: true,
+        }],
     },
     run: async(client, message, args) => {
     (async () => {
-        let pesquisa = args.join(' ')
+        let pesquisa = args?.join(' ') || message.options.getString('npm')
         if(!pesquisa) return message.reply('Bola de cristal: undefined')
-        let lan = await db.lgs.findOne({guildID: message.guild.id})
+        let lan = await db.lgs.findOne({guildID: !message.author ? message.user.id:!message.author ? message.user.id:message.author.id})
         const results = await searchNpmRegistry()
             .text(`${pesquisa}`)
             .size(5)
@@ -23,7 +29,7 @@ module.exports = {
             .addField('Descrição', `${results[0].description}`)
             .addField('Link', `${results[0].links.npm}`)
 
-        message.quote(embed)
+            message.reply({embeds: [embed]})
             } else {
                 if(lan.lang === 'en') {
                     const embed = new MessageEmbed()
@@ -34,11 +40,11 @@ module.exports = {
                     .addField('Description', `${results[0].description}`)
                     .addField('Link', `${results[0].links.npm}`)
         
-                message.quote(embed)
+                    message.reply({embeds: [embed]})
                 }
             }
     })().catch(error => {
-        message.quote('Não foi possivel achar essa package!')
+        message.reply('Não foi possivel achar essa package!')
     })
     }
 }

@@ -11,7 +11,7 @@ module.exports = {
     },
     run: async(client, message) => {
         let pref = await db.prefixs.findOne({id: message.guild.id})
-        let lan = await db.lgs.findOne({guildID: message.guild.id})
+        let lan = await db.lgs.findOne({guildID: !message.author ? message.user.id:!message.author ? message.user.id:message.author.id})
         let tag = client.user.tag
         let totalSegundos = (client.uptime / 1000);
         let horas = Math.floor(totalSegundos / 3600);
@@ -33,9 +33,9 @@ module.exports = {
             .setTitle(`${client.user.username} - Infos`)
             .addField('Informação sobre o bot', `<:discord:801199947634442250> **Tag:** \`${tag}\` \n<:id:801199947692113950> **ID:** \`${id}\` \n<:ausente:799747794545279057>  **Nasci no dia:** ${criado} \n<:rede:800011671145545738> **Estou online há:** ${horas} horas ${minutos} minutos ${segundos} segundos \n<:bug:801198221087080449>  **Criador** <@${config.creatorid}> \n<:mongodbkin:801203593658105898> **Meu banco de dados:** Mongo DB (${Math.floor(((stop[0] * 1e9) + stop[1]) / 1e6)}) \n<:djs:806874668564217876> **Versão da livraria (Discord.js):** ${package.dependencies["discord.js"]} \n<:config:806875469173620771> **Node.js:** ${process.version} \n<:badge:801204787491504178> **Prefixo padrão** ${config.prefix}\n<:badge:801204787491504178> **Prefixo personalizavel** ${pref?.prefix || `${config.prefix}`} \n [Link para convite](https://kinnybot.tk/)`)
             .addField('Informação sobre servidor', `<:winner:801206555478982657> **Servidores:** ${client.guilds.cache.size} \n<:terra:801206555755675728> **Membros totais** ${client.users.cache.size} \n📡 **Shards:** ${client.shard.client.ws.shards.map(x => x)[0].manager.totalShards}`)
-            .addField('Informações sobre minha Hospedagem', `**<:vps:800011671099670538> Hospedagem:** Witch Host\n<:vps:800011671099670538> **Marca do processador:** ${cpu.manufacturer} \n<:vps:800011671099670538> **Modelo:** ${cpu.brand} (${cpu.family}°) \n<:vps:800011671099670538> **Nucleos de processamento:** ${cpu.cores} \n<:vps:800011671099670538> **OS:** ${os.platform} \n<:vps:800011671099670538> **Bits:** ${os.arch}`)
+            .addField('Informações sobre minha Hospedagem', `**<:vps:800011671099670538> Hospedagem:**<:heroku:858472580997316648> Heroku\n<:vps:800011671099670538> **Marca do processador:** ${cpu.manufacturer} \n<:vps:800011671099670538> **Modelo:** ${cpu.brand} (${cpu.family}°) \n<:vps:800011671099670538> **Nucleos de processamento:** ${cpu.cores} \n<:vps:800011671099670538> **OS:** ${os.platform} \n<:vps:800011671099670538> **Bits:** ${os.arch}`)
             .setFooter(`Comando executado por ${message.author.username}`, message.author.displayAvatarURL({dynamic: true}))
-        message.quote(embed)
+            message.reply({embeds: [embed]})
         } else {
             if(lan.lang === 'en') {
                 moment.locale('en')
@@ -45,9 +45,9 @@ module.exports = {
                 .setTitle(`${client.user.username} - Infos`)
                 .addField('Bot information', `<:discord:801199947634442250> **Tag:** \`${tag}\` \n<:id:801199947692113950> **ID:** \`${id}\` \n<:ausente:799747794545279057>  **I was born on the day:** ${criado} \n<:rede:800011671145545738> **I've been online for:** ${horas} horus ${minutos} minutes ${segundos} seconds \n<:bug:801198221087080449>  **Creator** <@${config.creatorid}> \n<:mongodbkin:801203593658105898> **My database:** Mongo DB (${Math.floor(((stop[0] * 1e9) + stop[1]) / 1e6)}) \n<:djs:806874668564217876> **Bookstore version (Discord.js):** ${package.dependencies["discord.js"]} \n<:config:806875469173620771> **Node.js:** ${process.version} \n<:badge:801204787491504178> **Standard prefix** ${config.prefix}\n<:badge:801204787491504178> **Customizable prefix** ${pref?.prefix || `${config.prefix}`} \n [Invitation link](https://kinnybot.tk/)`)
                 .addField('Server information', `<:winner:801206555478982657> **Servers:** ${client.guilds.cache.size} \n<:terra:801206555755675728> **Total members** ${client.users.cache.size} \n📡 **Shards:** ${client.shard.client.ws.shards.map(x => x)[0].manager.totalShards}`)
-                .addField('Information about my Hosting', `**<:vps:800011671099670538> Host:** Witch Host <:WitchHosting2:803736567377952789>\n<:vps:800011671099670538> **Processor brand:** ${cpu.manufacturer} \n<:vps:800011671099670538> **Model:** ${cpu.brand} (${cpu.family}°) \n<:vps:800011671099670538> **Processing cores:** ${cpu.cores} \n<:vps:800011671099670538> **OS:** ${os.platform} \n<:vps:800011671099670538> **Bits:** ${os.arch}`)
+                .addField('Information about my Hosting', `**<:vps:800011671099670538> Host:**<:heroku:858472580997316648> Heroku <:WitchHosting2:803736567377952789>\n<:vps:800011671099670538> **Processor brand:** ${cpu.manufacturer} \n<:vps:800011671099670538> **Model:** ${cpu.brand} (${cpu.family}°) \n<:vps:800011671099670538> **Processing cores:** ${cpu.cores} \n<:vps:800011671099670538> **OS:** ${os.platform} \n<:vps:800011671099670538> **Bits:** ${os.arch}`)
                 .setFooter(`Comando executado por ${message.author.username}`, message.author.displayAvatarURL({dynamic: true}))
-            message.quote(embed)
+                message.reply({embeds: [embed]})
             }
         }
     }

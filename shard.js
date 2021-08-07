@@ -1,12 +1,7 @@
 const { ShardingManager } = require('discord.js');
-const { token } = require('./config.json');
-const express = require('express')
-const app = express()
+const { token, tokenc } = require('./config.json');
+const colors = require('colors')
  
-app.get('/', function (req, res) {
-})
- 
-app.listen(25565)
 const shards = new ShardingManager('./bot.js', {
   respawn: true,
   totalShards: 'auto',
@@ -14,7 +9,7 @@ const shards = new ShardingManager('./bot.js', {
 });
 
 shards.on('shardCreate', (shard) => {
-  console.log(`[SHARD] Iniciando a shard de id ${shard.id}`);
+  console.log(`[SHARD] Iniciando a shard de id ${shard.id}`.green);
 });
 
 shards.spawn();

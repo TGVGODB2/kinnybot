@@ -4,22 +4,28 @@ const db = require('../../../db')
 module.exports = {
     config: {
         nome: 'casar',
-        cooldown: 10
+        cooldown: 10,
+        options: [{
+            name: 'noiva',
+            type: 'STRING',
+            description: 'Você pode digitar o ID ou mencionar sua futura esposa!',
+            required: true,
+        }],
     },
     run: async(client, message, args) => {
-        if(!message.guild.me.hasPermission('MANAGE_EMOJIS')) return message.reply(`${client.user.username} - Erro \n<a:alerta:806274799638282311> Eu não tenho permissao \`Gerenciar emojis\``)
-        let noiva =  message.mentions?.users.first() || client.users.cache.find(x => args[0]?.includes(x.id))
+        if(!message.guild.me.permissions.has('MANAGE_EMOJIS')) return message.reply(`${client.user.username} - Erro \n<a:alerta:806274799638282311> Eu não tenho permissao \`Gerenciar emojis\``)
+        let noiva =  message.mentions?.users.first() || client.users.fetch(!args[0] ? message.options.getString('noiva').replace(/[<@!>]/g, ''):args[0])
         if(!noiva) return message.reply('Mencione a noiva')
-        let casado1 = await db.coins.findOne({id: message.author.id})
+        let casado1 = await db.coins.findOne({id: !message.author ? message.user.id:message.author.id})
         let casado2 = await db.coins.findOne({id: noiva.id})
-        const lan = await db.lgs.findOne({guildID: message.guild.id})
+        const lan = await db.lgs.findOne({guildID: !message.author ? message.user.id:message.author.id})
         if(!lan) {
-        if(noiva.id === message.author.id) return message.reply('Você não consegue casar com você mesmo!')
+        if(noiva.id === !message.author ? message.user.id:message.author.id) return message.reply('Você não consegue casar com você mesmo!')
         if(!noiva) return message.reply('Mencione a noiva')
         if(!casado1) return message.reply('Você não tem uma conta!')
         if(!casado2) return message.reply('A noiva nao tem uma conta!')
         if(casado1.casado2 == noiva.id) return message.reply('Você já e casado')
-        if(casado2.casado2 == message.author.id) return message.reply('Você já e casado')
+        if(casado2.casado2 == !message.author ? message.user.id:message.author.id) return message.reply('Você já e casado')
         let debbug = await db.coins.findOne({id: noiva.id})
         if(debbug.casado1 === noiva.id) return message.reply('Ele já e casado!')
         if(casado1.coinsc < 7000 || casado2.coinsc < 7000) return message.reply('Ambos não tem 7000 Koins! Casamentos custam dinheiro')
@@ -27,14 +33,14 @@ module.exports = {
         const embed = new MessageEmbed()
             .setColor('#9900f8')
             .addField(`${client.user.username} - Diversão`, `${noiva} o ${message.author} pediu você em casamento! Você aceita? So iremos tirar 7000 koins na sua carteira <:dinheiro:802595398153011291>`)
-                message.channel.send(embed).then(reagir => {
+                message.reply({embeds: [embed]}).then(reagir => {
                     reagir.react('✅')
                     reagir.react('❌')
                     const filter = (reaction, user) => {
                         return reaction.emoji.name === '✅' && user.id === noiva.id;
                     };
 
-                    const collector = reagir.createReactionCollector(filter, {time: 15000, max: 1});
+                    const collector = reagir.createReactionCollector({filter, time: 15000, max: 1});
 
                     collector.on('collect', async (reaction, user) => {
                         reagir.reactions.removeAll()
@@ -42,8 +48,8 @@ module.exports = {
                             .setColor('#9900f8')
                             .addField(`${client.user.username} - Diversão`, `${noiva} Aceitou o pedido de ${message.author} agora eles são casados!`)
 
-                        reagir.edit(embed)
-                       await db.coins.findOneAndUpdate({ id: message.author.id }, { coinsc: casado1.coinsc - 7000, casado1: message.author, casado2: noiva.id});
+                        reagir.edit({embeds: [embed]})
+                       await db.coins.findOneAndUpdate({ id: !message.author ? message.user.id:message.author.id }, { coinsc: casado1.coinsc - 7000, casado1: message.author, casado2: noiva.id});
                         await db.coins.findOneAndUpdate({ id: noiva.id}, { coinsc: casado2.coinsc - 7000, casado2: message.author, casado1: noiva.id});
                     });
                     const filter2 = (reaction, user) => {
@@ -57,18 +63,18 @@ module.exports = {
                         const embed = new MessageEmbed()
                             .setColor('#9900f8')
                             .addField(`${client.user.username} - Diversão`, `${noiva} Não aceitou o pedido! Por isso o ${message.author} ficou com depressão!`)
-                        reagir.edit(embed)
+                        reagir.edit({embeds: [embed]})
 
                     })
                 })
             } else {
                 if(lan.lang === 'en') {
-                    if(noiva.id === message.author.id) return message.reply('You can\'t marry yourself!')
+                    if(noiva.id === !message.author ? message.user.id:message.author.id) return message.reply('You can\'t marry yourself!')
                     if(!noiva) return message.reply('Mention the bride')
                     if(!casado1) return message.reply('You don\'t have an account!')
                     if(!casado2) return message.reply('The bride does not have an account!')
                     if(casado1.casado2 == noiva.id) return message.reply('You are already married')
-                    if(casado2.casado2 == message.author.id) return message.reply('You are already married')
+                    if(casado2.casado2 == !message.author ? message.user.id:message.author.id) return message.reply('You are already married')
                     let debbug = await db.coins.findOne({id: noiva.id})
                     if(debbug.casado1 === noiva.id) return message.reply('He\'s already married!')
                     if(casado1.coinsc < 7000 || casado2.coinsc < 7000) return message.reply('They both don\'t have 7000 Koins! Weddings cost money')
@@ -76,14 +82,14 @@ module.exports = {
                     const embed = new MessageEmbed()
                         .setColor('#9900f8')
                         .addField(`${client.user.username} - Fun`, `${noiva} o ${message.author} asked you to marry him! You accept? We will only take 7000 koins in your wallet <:dinheiro:802595398153011291>`)
-                            message.channel.send(embed).then(reagir => {
+                            message.reply({embeds: [embed]}).then(reagir => {
                                 reagir.react('✅')
                                 reagir.react('❌')
                                 const filter = (reaction, user) => {
                                     return reaction.emoji.name === '✅' && user.id === noiva.id;
                                 };
             
-                                const collector = reagir.createReactionCollector(filter, {time: 15000, max: 1});
+                                const collector = reagir.createReactionCollector({filter, time: 15000, max: 1});
             
                                 collector.on('collect', async (reaction, user) => {
                                     reagir.reactions.removeAll()
@@ -91,8 +97,8 @@ module.exports = {
                                         .setColor('#9900f8')
                                         .addField(`${client.user.username} - Fun`, `${noiva} Accepted the ${message.author} application now they are married!`)
             
-                                    reagir.edit(embed)
-                                   await db.coins.findOneAndUpdate({ id: message.author.id }, { coinsc: casado1.coinsc - 7000, casado1: message.author, casado2: noiva.id});
+                                    reagir.edit({embeds: [embed]})
+                                   await db.coins.findOneAndUpdate({ id: !message.author ? message.user.id:message.author.id }, { coinsc: casado1.coinsc - 7000, casado1: message.author, casado2: noiva.id});
                                     await db.coins.findOneAndUpdate({ id: noiva.id}, { coinsc: casado2.coinsc - 7000, casado2: message.author, casado1: noiva.id});
                                 });
                                 const filter2 = (reaction, user) => {
@@ -106,7 +112,7 @@ module.exports = {
                                     const embed = new MessageEmbed()
                                         .setColor('#9900f8')
                                         .addField(`${client.user.username} - Fun`, `${noiva} did not accept the request! So the ${message.author} got depressed!`)
-                                    reagir.edit(embed)
+                                    reagir.edit({embeds: [embed]})
             
                                 })
                             })

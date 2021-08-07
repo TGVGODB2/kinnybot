@@ -12,5 +12,5 @@ module.exports = async(client, guild) => {
         .setTitle(`${client.user.username} - Novo servidor!`)
         .setThumbnail(guild.iconURL({dynamic: true}))
         .addField('Fui adicionado em um novo servidor!', `Grupo: ${guild.name} \nID Do grupo: ${guild.id} \nMembros ${guild.memberCount} \nDono: ${guild.members.cache.get(guild.ownerID).user.username} `)
-        clm.send(embed)
+        clm.send({embeds: [embed]})
 }

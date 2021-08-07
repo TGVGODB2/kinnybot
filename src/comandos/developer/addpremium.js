@@ -7,7 +7,7 @@ module.exports = {
     },
     run: async(client, message, args) => {
         let gp = message.mentions.users.first()
-if(message.author.id !== '395995293436477442') {
+if(!message.author ? message.user.id:message.author.id !== '425775842371829760') {
     message.reply('Apenas meu desenvolvedor pode executar esse comando!')
 } else {
     let procm =  await db.premi.findOne({groupid: gp.id})
@@ -17,10 +17,10 @@ if(message.author.id !== '395995293436477442') {
             await db.premi.create({
                 groupid: gp.id,
             })
-        message.channel.send('Pronto! Esse membro agora é premium')
+        message.reply('Pronto! Esse membro agora é premium')
   
 } else {
-     message.channel.send('Esse membro já e premium')   
+     message.reply('Esse membro já e premium!')   
     }
 }
     }

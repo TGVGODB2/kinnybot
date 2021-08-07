@@ -7,11 +7,11 @@ module.exports = {
         cooldown: 10
     },
     run: async (client, message, args) => {
-        let proc = await db.coins.findOne({id: message.author.id})
-        if (!proc) return message.channel.send(`${client.user.username} - Diversão \n Você não tem dinheiro :(. Jogue no daily e ganhe um dinheirinho!`)
-        let lan =  await db.lgs.findOne({guildID: message.guild.id})
+        let proc = await db.coins.findOne({id: !message.author ? message.user.id:message.author.id})
+        if (!proc) return message.reply(`${client.user.username} - Diversão \n Você não tem dinheiro :(. Jogue no daily e ganhe um dinheirinho!`)
+        let lan =  await db.lgs.findOne({guildID: !message.author ? message.user.id:message.author.id})
         if(!lan) {
-        if(proc.coinsb <= 0) return message.channel.send(`${client.user.username} - Erro \n Você não tem dinheiro!`)
+        if(proc.coinsb <= 0) return message.reply(`${client.user.username} - Erro \n Você não tem dinheiro!`)
             const embed = new MessageEmbed()
                 .setColor('#9900f8')
                 .addField(`${client.user.username} - Diversão`, `😅 Você sacou uma quantia de ${proc.coinsb} koins`)
@@ -20,10 +20,10 @@ module.exports = {
         proc.coinsc = soma
         proc.coinsb = dimi
         proc.save()
-            message.channel.send(embed)
+            message.reply({embeds: [embed]})
         } else {
             if(lan.lang === 'en') {
-                if(proc.coinsb <= 0) return message.channel.send(`${client.user.username} - Error \nYou do not have money!`)
+                if(proc.coinsb <= 0) return message.reply(`${client.user.username} - Error \nYou do not have money!`)
                 const embed = new MessageEmbed()
                     .setColor('#9900f8')
                     .addField(`${client.user.username} - Fun`, `😅 You have withdrawn an amount of ${proc.coinsb} koins`)
@@ -32,7 +32,7 @@ module.exports = {
             proc.coinsc = soma
             proc.coinsb = dimi
             proc.save()
-                message.channel.send(embed)
+                message.reply({embeds: [embed]})
             }
     }
 }

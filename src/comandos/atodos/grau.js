@@ -8,7 +8,7 @@ module.exports = {
         if(!escolha) return message.reply('Use grau <moto/bike>')
         if(!['bike', 'moto'].includes(escolha)) return message.reply('Isso não está na lista! use: grau <moto/bike>')
         if(escolha === 'bike') {
-            message.channel.send('<:bike_andando:816293573322211358>').then(editar => {
+            message.reply('<:bike_andando:816293573322211358>').then(editar => {
                 setTimeout(() => {
                     editar.edit('⠀⠀<:bike_andando:816293573322211358>')
                 }, 2000)
@@ -32,7 +32,7 @@ module.exports = {
                 }, 14000)
             })
         } else if(escolha === 'moto') {
-            message.channel.send('<:moto_andando:816293573023760425>').then(editar => {
+            message.reply('<:moto_andando:816293573023760425>').then(editar => {
                 setTimeout(() => {
                     editar.edit('⠀⠀<:moto_andando:816293573023760425>')
                 }, 2000)

@@ -2,12 +2,20 @@ module.exports = {
     config: {
         nome: 'unmute',
         aliases: ['desmutar'],
-        cooldown: 10
+        cooldown: 10,
+        options: [
+            {
+            name: 'user',
+            type: 'USER',
+            description: 'User da pessoa',
+            required: true,
+        },
+    ]
     },
     run: async(client, message, args) => {
-        let member = message.mentions.members.first() || message.guild.members.cache.get(args[0])
-        if (!message.member.hasPermission("MUTE_MEMBERS")) return message.reply(`${client.user.username} - Erro \n Você tem que ter a permissão \`Mutar membros!\``)
-        if(!message.guild.me.hasPermission('MANAGE_ROLES')) return message.reply(`${client.user.username} - Erro \n<a:alerta:806274799638282311> Eu não tenho permissao \`Mutar membros!\``)
+        let member = message.mentions?.members.first() || message.guild.members.cache.get(!args[0] ? message.options.getUser('user').id:args[0])
+        if (!message.member.permissions.has("MUTE_MEMBERS")) return message.reply(`${client.user.username} - Erro \n Você tem que ter a permissão \`Mutar membros!\``)
+        if(!message.guild.me.permissions.has('MANAGE_ROLES')) return message.reply(`${client.user.username} - Erro \n<a:alerta:806274799638282311> Eu não tenho permissao \`Mutar membros!\``)
 
         let role = message.guild.roles.cache.filter(x => x.name == 'kinnymute').map(x => x)[0]
 
@@ -17,6 +25,6 @@ module.exports = {
 
         await member.roles.remove(role)
 
-        message.quote("Esse membro foi desmutado com sucesso!")
+        message.reply("Esse membro foi desmutado com sucesso!")
     }
 }

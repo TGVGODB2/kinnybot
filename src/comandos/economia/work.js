@@ -8,8 +8,8 @@ module.exports = {
         cooldown: 10
     },
     run: async(client, message) => {
-        let empregado = await db.coins.findOne({id: message.author.id})
-        const lan = await db.lgs.findOne({guildID: message.guild.id})
+        let empregado = await db.coins.findOne({id: !message.author ? message.user.id:message.author.id})
+        const lan = await db.lgs.findOne({guildID: !message.author ? message.user.id:message.author.id})
         const timeout = 1200000
         if (!empregado) return message.reply('Você não tem 1 conta')
         const grana = Math.floor(Math.random() * 100);
@@ -27,15 +27,15 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setColor('#9900f8')
                 .addField(`${client.user.username} - Diversão`, `Você trabalhou muito! Seu chefe deu uma folga por **${infh.hours} horas ${infh.minutes} minutos ${infh.seconds} segundos!**`)
-            message.channel.send(embed)
+            message.reply({embeds: [embed]})
         } else {
-            await db.coins.updateOne({id: message.author.id}, {workCooldown: Date.now()})
+            await db.coins.updateOne({id: !message.author ? message.user.id:message.author.id}, {workCooldown: Date.now()})
             const random = empregos[Math.floor(Math.random() * empregos.length)]
             const embed = new MessageEmbed()
                 .setColor('#9900f8')
                 .addField(`${client.user.username} - Diversão`, random)
-await db.coins.updateOne({id: message.author.id}, {coinsc: empregado.coinsc + grana, workCooldown: Date.now()})
-            message.channel.send(embed)
+await db.coins.updateOne({id: !message.author ? message.user.id:message.author.id}, {coinsc: empregado.coinsc + grana, workCooldown: Date.now()})
+            message.reply({embeds: [embed]})
         }
 
         } else {
@@ -52,15 +52,15 @@ await db.coins.updateOne({id: message.author.id}, {coinsc: empregado.coinsc + gr
                     const embed = new MessageEmbed()
                         .setColor('#9900f8')
                         .addField(`${client.user.username} - Diversão`, `You worked hard! Your boss took a break for **${infh.hours} hours ${infh.minutes} minutes ${infh.seconds} seconds!**`)
-                    message.channel.send(embed)
+                    message.reply({embeds: [embed]})
                 } else {
-                    await db.coins.updateOne({id: message.author.id}, {workCooldown: Date.now()})
+                    await db.coins.updateOne({id: !message.author ? message.user.id:message.author.id}, {workCooldown: Date.now()})
                     const random = empregos[Math.floor(Math.random() * empregos.length)]
                     const embed = new MessageEmbed()
                         .setColor('#9900f8')
                         .addField(`${client.user.username} - Fun`, random)
-        await db.coins.updateOne({id: message.author.id}, {coinsc: empregado.coinsc + grana, workCooldown: Date.now()})
-                    message.channel.send(embed)
+        await db.coins.updateOne({id: !message.author ? message.user.id:message.author.id}, {coinsc: empregado.coinsc + grana, workCooldown: Date.now()})
+                    message.reply({embeds: [embed]})
                 }
             }
         }

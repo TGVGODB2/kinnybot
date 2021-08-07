@@ -3,11 +3,17 @@ const {MessageEmbed} = require('discord.js')
 module.exports = {
     config: {
         nome: 'xp',
-        cooldown: 10
+        cooldown: 10,
+        options: [{
+            name: 'user',
+            type: 'STRING',
+            description: 'User da pessoa',
+            required: true,
+        }],
     },
     run: async(client, message, args) => {
-        const lan = await db.lgs.findOne({guildID: message.guild.id})
-        let members = message.mentions?.users.first() || client.users.cache.find(x => args[0]?.includes(x.id)) || message.author
+        const lan = await db.lgs.findOne({guildID: !message.author ? message.user.id:message.author.id})
+        let members = message.mentions?.users.first() || client.users.fetch(!args[0] ? message.options.getString('user').replace(/[<@!>]/g, ''):args[0])
        let xp = await db.xps.findOne({userID: members.id})
         if(xp) {
             const valorAtual = xp.xp - (xp.level-1) * 8000, valorTotal = xp.level * 8000;
@@ -21,7 +27,7 @@ module.exports = {
                 .setTitle(`${client.user.username} - Estatisticas`)
                 .addField('Eu encontrei no meu banco de dados isso aqui', `✨ Nivel: ${xp.level} \n✨ XP: ${xp.xp} \n✨ Progresso: ${response}`)
 
-            message.channel.send(embed)
+            message.reply({embeds: [embed]})
             } else {
                 if(lan.lang === 'en') {
                     const embed = new MessageEmbed()
@@ -29,7 +35,7 @@ module.exports = {
                     .setTitle(`${client.user.username} - Statics`)
                     .addField('I found this in my database', `✨ Level: ${xp.level} \n✨ XP: ${xp.xp} \n✨ Progress: ${response}`)
     
-                message.channel.send(embed)
+                message.reply({embeds: [embed]})
                 }
             }
         }

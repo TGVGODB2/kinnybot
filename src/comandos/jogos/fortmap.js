@@ -18,7 +18,7 @@ module.exports = {
                 .setDescription('Mapa atual do fortnite:')
                 .setImage(img)
 
-            message.channel.send(embed)
+            message.reply({embeds: [embed]})
             } else {
                 if(lan.lang === 'en') {
                     const embed = new MessageEmbed()
@@ -27,7 +27,7 @@ module.exports = {
                     .setDescription('Current fortnite map:')
                     .setImage(img)
     
-                message.channel.send(embed)
+                message.reply({embeds: [embed]})
                 }
             }
 

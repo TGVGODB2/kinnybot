@@ -1,59 +1,33 @@
 const axios = require('axios')
 const { MessageEmbed } = require('discord.js')
 const db = require('../../../db.js')
+const lang = require('../../../langs.json')
 module.exports = {
     config: {
         nome: 'mineservers',
-        cooldown: 10
+        aliases: ['mcserver', 'mcservers'],
+        cooldown: 10,
+        options: [{
+            name: 'ip',
+            type: 'STRING',
+            description: 'IP do servidor!',
+            required: true,
+        }],
     },
     run: async(client, message, args) => {
-        let ip = args.join(' ')
+        let ip = args?.join(' ') || message.options.getString('ip')
         if(!ip) return message.reply('Digite o ip!')
         const lan = await db.lgs.findOne({guildID: message.guild.id})
-        if(!lan) {
-        axios.get(`https://api.mcsrvstat.us/2/${ip}`).then(async response => {
-            if(response.data.ip === '147.135.86.107' || response.data.ip === "54.39.234.40") {
+        axios.get(`https://api.mcsrvstat.us/2/${ip}`).then(response => {
+            console.log(response.data.mods.names.length)
             const embed = new MessageEmbed()
                 .setColor('#9900f8')
-                .addField(`${client.user.username} - Minecraft`, `**IP:** ${response.data.ip}:${response.data.port}\n**Jogadores** ${response.data.players.online}/${response.data.players.max} \n**Versão:** ${response.data.version} \n**JAR**: ${response.data.software} \n**MOTD:** ${response.data.motd.clean[0]}`)
+                .addField(`${client.user.username} - Minecraft`, `${lan && lan.lang == 'en' ? `**IP:** ${response.data.ip}:${response.data.port}\n**Players** ${response.data.players.online}/${response.data.players.max} \n**Version:** ${response.data.version} \n**JAR**: ${response.data.software} \n**MOTD:** ${response.data.motd.clean.join('\n')}`:`**IP:** ${response.data.ip}:${response.data.port}\n**Jogadores** ${response.data.players.online}/${response.data.players.max} \n**Versão:** ${response.data.version} \n**JAR**: ${response.data.software} \n**MOTD:** ${response.data.motd.clean.join('\n')}`} \nMods: \`${!response.data.mods ? "Sem mods":`${response.data.mods.names.length > 60 ? `${response.data.mods.names.slice(0, 20).join(', ')} e outros ${response.data.mods.names.length - 20} mods`:response.data.mods.names.join(', ')}`}\``)
                 .setImage(`http://status.mclive.eu/${ip}/${ip}/25565/banner.png`)
-            .setFooter('Cliente da Witch Host: Sim')
-
-          return  message.channel.send(embed)
-            }
-            const embed = new MessageEmbed()
-            .setColor('#9900f8')
-            .addField(`${client.user.username} - Minecraft`, `**IP:** ${response.data.ip}:${response.data.port}\n**Jogadores** ${response.data.players.online}/${response.data.players.max} \n**Versão:** ${response.data.version} \n**JAR**: ${response.data.software} \n**MOTD:** ${response.data.motd.clean[0]}`)
-            .setImage(`http://status.mclive.eu/${ip}/${ip}/25565/banner.png`)
-        .setFooter('Cliente da Witch Host: Não')
-
-      return  message.channel.send(embed)
-        }).catch(error => { 
-        message.quote('O servidor se encontra offline!')
+                message.reply({embeds: [embed]})
+        }).catch(e => {
+            console.log(e)
+            message.reply(lan && lan.lang === 'en' ? 'The server is offline':'O servidor se encontra offline')
         })
-    } else {
-        if(lan.lang === 'en') {
-            axios.get(`https://api.mcsrvstat.us/2/${ip}`).then(response => {
-                if(response.data.ip === '147.135.86.107') {
-                const embed = new MessageEmbed()
-                    .setColor('#9900f8')
-                    .addField(`${client.user.username} - Minecraft`, `**IP:** ${response.data.ip}:${response.data.port}\n**Players** ${response.data.players.online}/${response.data.players.max} \n**Version:** ${response.data.version} \n**Software**: ${response.data.software} \n**MOTD:** ${response.data.motd.clean[0]}`)
-                    .setImage(`http://status.mclive.eu/${ip}/${ip}/25565/banner.png`)
-                .setFooter('Witch Host Client: Yes')
-    
-              return  message.channel.send(embed)
-                }
-                const embed = new MessageEmbed()
-                .setColor('#9900f8')
-                .addField(`${client.user.username} - Minecraft`, `**IP:** ${response.data.ip}:${response.data.port}\n**Players** ${response.data.players.online}/${response.data.players.max} \n**Version:** ${response.data.version} \n**Software**: ${response.data.software} \n**MOTD:** ${response.data.motd.clean[0]}`)
-                .setImage(`http://status.mclive.eu/${ip}/${ip}/25565/banner.png`)
-            .setFooter('Witch Host Client: No')
-    
-          return  message.channel.send(embed)
-            }).catch(error => { 
-            message.quote('The server is offline!')
-            })
-        }
-    }
     }
 }

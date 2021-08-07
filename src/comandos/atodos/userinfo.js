@@ -4,11 +4,21 @@ const db = require('../../../db.js')
 module.exports = {
     config: {
         nome: "userinfo",
-        cooldown: 10
+        cooldown: 10,
+        options: [{
+            name: 'usuario',
+            type: 'STRING',
+            description: 'User da pessoa',
+            required: false,
+        }],
     },
     run: async(client, message, args) => {
-            const lan = await db.lgs.findOne({guildID: message.guild.id})
-            let membro = message.mentions?.members.first() || message.member
+            const lan = await db.lgs.findOne({guildID: !message.author ? message.user.id:message.author.id})
+            let membro = message.mentions?.members.first() || message.guild.members.cache.get(!args[0] ? message.options.getString('user').replace(/[<@!>]/g, ''):args[0]) || message.guild.members.fetch(!args[0] ? message.options.getString('user').replace(/[<@!>]/g, ''):args[0]);
+
+            if(membro instanceof Promise) {
+                await membro.then(u => membro = u).catch(err => membro = !message.author ? message.user:message.author);
+            }
             let casado =  await db.coins.findOne({casado1: membro.id})
             let tag = membro.user.tag
             let id = membro.user.id
@@ -19,7 +29,7 @@ module.exports = {
              moment.locale('pt-br')
             let jogando = membro.presence.activities[0]?.name || "Está jogando nada!"
             let detalhes = membro.presence.activities[0]?.details || "Está jogando nada!"
-            let dispositivo = Object?.keys(membro?.presence.clientStatus)[0] || 'Nenhuma plataforma'
+            let dispositivo = Object?.keys(membro.presence.clientStatus)[0] || 'Nenhuma plataforma'
             let statuse = membro.presence.status
             let customs = `${membro.presence.activities[0]?.emoji?.name || "Sem emoji"} ${membro.presence.activities[0]?.state || 'Sem status'}`
             const values = {web: '🌐', desktop: '🖥', mobile: '📱 '}
@@ -36,8 +46,8 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setColor('#9900f8')
                 .setTitle(`${client.user.username} - Infos`)
-                .addField('Informação sobre o usuario', `<:discord:801199947634442250> **Tag:** \`${tag}\` \n<:id:801199947692113950> **ID:** \`${id}\` \n <:ausente:799747794545279057>  **Conta criada:** ${criado} (${criado2}) \n <a:cacholo:801200880174235668> **Entrou aqui em:** ${entra} \n<a:tipo:800025557965733918> **Estado:** ${result2} \n 🕹️ **Jogando agora:** ${jogando.replace('Custom Status', `${customs} (Status customizavel.)`)} \n<a:carregando:800011672122556447> **Detalhes:** ${detalhes} \n <a:dance:798169339181531167> **Plataforma:** ${result} \n **<:diamante:806874668442845194> Casado com:** ${message.guild.members.cache.get(casado?.casado2)?.user.username || "Ninguem"} \n \n **Servidor** \n \n <:cargo:801199947801952296>  **Cargos adicionados:** ${membro._roles.length} \n <:cargo:801199947801952296> **Cargo mais alto:** ${membro.roles.highest.name}`)
-            message.quote(embed)
+                .addField('Informação sobre o usuario', `<:discord:801199947634442250> **Tag:** \`${tag}\` \n<:id:801199947692113950> **ID:** \`${id}\` \n <:ausente:799747794545279057>  **Conta criada:** ${criado} (${criado2}) \n <a:cacholo:801200880174235668> **Entrou aqui em:** ${entra} \n<a:tipo:800025557965733918> **Estado:** ${result2} \n 🕹️ **Jogando agora:** ${jogando.replace('Custom Status', `${customs} (Status customizavel.)`)} \n<a:carregando:800011672122556447> **Detalhes:** ${detalhes} \n <a:dance:798169339181531167> **Plataforma:** ${result} \n **<:diamante:806874668442845194> Casado com:** ${client.users.cache.get(casado?.casado2)?.username || "Ninguem"} \n \n **Servidor** \n \n <:cargo:801199947801952296>  **Cargos adicionados:** ${membro._roles.length} \n <:cargo:801199947801952296> **Cargo mais alto:** ${membro.roles.highest.name}`)
+                message.reply({embeds: [embed]})
         } else {
             moment.locale('en')
             if(lan.lang === 'en') {
@@ -60,8 +70,8 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setColor('#9900f8')
                 .setTitle(`${client.user.username} - Infos`)
-                .addField('User information', `<:discord:801199947634442250> **Tag:** \`${tag}\` \n<:id:801199947692113950> **ID:** \`${id}\` \n <:ausente:799747794545279057>  **Account created:** ${criado} (${criado2}) \n <a:cacholo:801200880174235668> **Came here in:** ${entra} \n<a:tipo:800025557965733918> **State:** ${result2} \n 🕹️ **Playing now:** ${jogando.replace('Custom Status', `${customs} (Custom Status.)`)} \n<a:carregando:800011672122556447> **Details:** ${detalhes} \n <a:dance:798169339181531167> **Platform:** ${result} \n **<:diamante:806874668442845194> Married with:** ${message.guild.members.cache.get(casado?.casado2)?.user.username || "No one"} \n \n **Server** \n \n <:cargo:801199947801952296>  **Positions added:** ${membro._roles.length} \n <:cargo:801199947801952296> **Highest position:** ${membro.roles.highest.name}`)
-            message.quote(embed)
+                .addField('User information', `<:discord:801199947634442250> **Tag:** \`${tag}\` \n<:id:801199947692113950> **ID:** \`${id}\` \n <:ausente:799747794545279057>  **Account created:** ${criado} (${criado2}) \n <a:cacholo:801200880174235668> **Came here in:** ${entra} \n<a:tipo:800025557965733918> **State:** ${result2} \n 🕹️ **Playing now:** ${jogando.replace('Custom Status', `${customs} (Custom Status.)`)} \n<a:carregando:800011672122556447> **Details:** ${detalhes} \n <a:dance:798169339181531167> **Platform:** ${result} \n **<:diamante:806874668442845194> Married with:** ${client.users.cache.get(casado?.casado2)?.username || "No one"} \n \n **Server** \n \n <:cargo:801199947801952296>  **Positions added:** ${membro._roles.length} \n <:cargo:801199947801952296> **Highest position:** ${membro.roles.highest.name}`)
+                message.reply({embeds: [embed]})
         }
         }
         }

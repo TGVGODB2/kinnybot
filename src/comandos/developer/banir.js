@@ -7,8 +7,8 @@ module.exports = {
     run: async(client, message, args) => {
         let motivo1 = args.slice(1).join(" ")
         let gp = message.mentions.members.first(1)[0]
-        if(message.author.id !== '395995293436477442') {
-            message.reply('Apenas meu desenvolvedor pode executar esse comando!')
+        if(!message.author ? message.user.id:message.author.id !== '425775842371829760') {
+            message.reply({content: 'Apenas meu desenvolvedor pode executar esse comando!'})
         } else {
             let procm =  await db.ban.findOne({punid: gp})
             if(!procm) {
@@ -16,9 +16,9 @@ module.exports = {
                     punid: gp.id,
                     motivo: motivo1
                 })
-                message.channel.send('Pronto! Essa pessoa está banida e não pode mais usar meus comandos!')
+                message.reply('Pronto! Essa pessoa está banida e não pode mais usar meus comandos!')
             } else {
-                message.channel.send('Essa pessoa já esta banida')
+                message.reply('Essa pessoa já esta banida')
             }
         }
     }

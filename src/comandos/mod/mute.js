@@ -5,17 +5,31 @@ module.exports = {
     config: {
         nome: 'mute',
         aliases: ['mutar'],
-        cooldown: 10
+        cooldown: 10,
+        options: [
+            {
+            name: 'user',
+            type: 'USER',
+            description: 'Usuario que vai receber o mute!',
+            required: true,
+        },
+        {
+            name: 'motivo',
+            type: 'STRING',
+            description: 'Motivo do mute',
+            required: false,
+        }
+    ],
     },
     run: async (client, message, args) => {
-        if (!message.member.hasPermission("MUTE_MEMBERS")) return message.reply(`${client.user.username} - Erro \n Você tem que ter a permissão \`Mutar membros!\``)
-if(!message.guild.me.hasPermission('MANAGE_ROLES')) return message.reply(`${client.user.username} - Erro \n<a:alerta:806274799638282311> Eu não tenho permissao \`Gerenciar Cargos\``)
+        if (!message.member.permissions.has("MUTE_MEMBERS")) return message.reply(`${client.user.username} - Erro \n Você tem que ter a permissão \`Mutar membros!\``)
+if(!message.guild.me.permissions.has('MANAGE_ROLES')) return message.reply(`${client.user.username} - Erro \n<a:alerta:806274799638282311> Eu não tenho permissao \`Gerenciar Cargos\``)
         moment.locale('pt-br')
         let member = message.mentions.members.first()
         if (!member) {
             message.reply(`${client.user.username} - Erro \n Mencione um membro`)
         }
-                let mot = args.slice(1).join(" ") || "Sem motivo"
+                let mot = args?.slice(1).join(" ") || !message.options.getString('motivo') ? "Sem motivo":message.options.getString('motivo')
 
                 let grupo = message.guild.roles.cache.find(x => x.name === 'kinnymute')
         if (!grupo) {
@@ -27,7 +41,9 @@ if(!message.guild.me.hasPermission('MANAGE_ROLES')) return message.reply(`${clie
                         permissions:['SEND_MESSAGES', 'ADD_REACTIONS']
                     },
                     reason: 'Cargo necessário para silenciar usuários.'
-
+                })
+                message.guild.channels.cache.forEach(canal => {
+                    canal.permissionOverwrites.edit(grupo, {SEND_MESSAGES: false})
                 })
             } catch(e){
                 console.log(e.stack);
@@ -36,7 +52,7 @@ if(!message.guild.me.hasPermission('MANAGE_ROLES')) return message.reply(`${clie
         }
         let memberm = await db.muteds.findOne({guildId: message.guild.id})
         if(memberm) {
-         if(memberm.memberid === message.author.id) return message.reply(`${client.user.username} - Erro \n Essa pessoa já esta mute!`)
+         if(memberm.memberid === !message.author ? message.user.id:message.author.id) return message.reply(`${client.user.username} - Erro \n Essa pessoa já esta mute!`)
          return;
         }
             member.roles.add(grupo)
@@ -49,7 +65,7 @@ if(!message.guild.me.hasPermission('MANAGE_ROLES')) return message.reply(`${clie
             .addField('Autor do mute', `${message.author}`)
             .addField('Motivo', `${mot} \n \n`)
             .setFooter(`Seu punimento foi aplicado ${moment(message.createdAt).calendar()}`)
-        member.send(embed)
+        member.send({embeds: [embed]})
                         message.guild.channels.cache.forEach(async (channel, id) => {
                             await channel.createOverwrite(grupo, {
     SEND_MESSAGES: false

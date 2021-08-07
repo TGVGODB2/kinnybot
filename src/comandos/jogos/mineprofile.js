@@ -4,11 +4,17 @@ const db = require('../../../db')
 module.exports = {
     config: {
         nome: 'mineprofile',
-        cooldown: 10
+        cooldown: 10,
+        options: [{
+            name: 'nick',
+            type: 'STRING',
+            description: 'Nick do jogador!',
+            required: true,
+        }],
     },
     run: async(client, message, args) => {
         const lan = await db.lgs.findOne({guildID: message.guild.id})
-        let nick = args.join(' ')
+        let nick = args?.join(' ') || message.options.getString('nick')
         if(!nick) return message.reply('Digite o nick!') 
         if(!lan) {
         if(nick.toLowerCase() == 'leonardobr54_yt') return message.reply('Você não pode por o nick do criador!')
@@ -21,7 +27,7 @@ module.exports = {
           .addField('UUID', `${mine.id}`)
           .addField('Historico de nicks', `${mine.name_history?.map(h => h.name).join(' ') || "Não existe historico"}`)
           
-          message.quote(embed)
+          message.reply({embeds: [embed]})
         })
     } else {
         if(lan.lang === 'en') {
@@ -35,7 +41,7 @@ module.exports = {
               .addField('UUID', `${mine.id}`)
               .addField('History of nicknames', `${mine.name_history?.map(h => h.name).join(' ') || "There is no history"}`)
               
-              message.quote(embed)
+              message.reply({embeds: [embed]})
             })
         }
     }
